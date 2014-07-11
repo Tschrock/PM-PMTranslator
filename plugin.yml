@@ -1,0 +1,19 @@
+#name, main, version and api are required
+name: PMTranslator
+main: tschrock\PMTranslator\PMTranslator
+version: 0.1.0
+api: [1.0.0]
+
+load: POSTWORLD
+author: tschrock (tschrock123@gmail.com)
+description: Translate text in-game.
+website: http://www.tschrock.net
+commands:
+ translate:
+  description: Translate command.
+  usage: "/translate (From Language) to <To Language> <Text to be translated>"
+  permission: pmtranslator.command.translate
+permissions:
+ pmtranslator.command.translate:
+  description: "Allows the user to translate stuff"
+  default: true

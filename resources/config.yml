@@ -1,0 +1,5 @@
+# Default config for PerWorldGamemode plugin
+baseUrl: http://translate.google.com/translate_a/t?client=p&ie=UTF-8&oe=UTF-8
+defaultTo: en
+defaultFrom: auto
+UserAgent: Mozilla/4.0
