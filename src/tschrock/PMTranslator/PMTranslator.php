@@ -12,6 +12,7 @@ class PMTranslator extends PluginBase {
     const CONFIG_TRANSFROM = "defaultFrom";
     const CONFIG_APIURL = "baseUrl";
     const CONFIG_USERAGENT = "UserAgent";
+    const CONFIG_DEBUG = "debug";
 
     var $threadedCurl;
 
@@ -24,7 +25,6 @@ class PMTranslator extends PluginBase {
     }
 
     public function onEnable() {
-        #$this->getServer()->getPluginManager()->registerEvents(new PlayerEventListener($this), $this);
         $this->threadedCurl = new ThreadedCurl();
         $this->getServer()->getScheduler()->scheduleRepeatingTask(new CheckCurlPluginTask($this), 20);
 
@@ -64,15 +64,24 @@ class PMTranslator extends PluginBase {
                 $langFrom = PMTranslator::parseLang($fromlang);
 
                 $translateurl = $this->getConfig()->get("baseUrl") . "&text=" . urlencode($text) . "&hl=$langTo&sl=$langFrom";
-
-
-                $this->threadedCurl->startRequest($translateurl, __NAMESPACE__ . '\PMTranslator::onRequestDone', array(
+                
+                $translateOpts = array(
                     CURLOPT_USERAGENT => $this->getConfig()->get("UserAgent"),
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_FAILONERROR => true,
-                    #CURLOPT_CONNECTTIMEOUT => 20000,
-                    #CURLOPT_MAX_RECV_SPEED_LARGE => 1
-                        ), $sender);
+                        );
+                
+                if ($this->getConfig()->get(self::CONFIG_DEBUG) === true){
+                    $sender->sendMessage("[PMTranslator] Debug enabled; Testing multithreading: downloading 20MB test file at 1MB/sec. (That's a 20 second download)");
+                    $sender->sendMessage("[PMTranslator] If you can still do stuff, that means threading works. :)");
+                    $translateurl = "http://www.tschrock.net/testfiles/20MB.dat";
+                    $translateOpts[CURLOPT_CONNECTTIMEOUT] = 1000;
+                    $translateOpts[CURLOPT_MAX_RECV_SPEED_LARGE] = 1048576;
+                }
+                
+                
+
+                $this->threadedCurl->startRequest($translateurl, __NAMESPACE__ . '\PMTranslator::onRequestDone', $translateOpts, $sender);
                 return true;
             default:
                 return false;
